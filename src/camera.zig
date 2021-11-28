@@ -17,8 +17,6 @@ pub const Camera = struct {
     half_height: f32,
     pixel_width: f32,
     pixel_height: f32,
-    screen_width: f32,
-    screen_height: f32,
 
     pub fn pointAt(screen_width: u32, screen_height: u32, cam: PointAtCamera) Camera {
         const screen_width_f = @intToFloat(f32, screen_width);
@@ -43,16 +41,14 @@ pub const Camera = struct {
             .half_height = half_height,
             .pixel_width = pixel_width,
             .pixel_height = pixel_height,
-            .screen_width = screen_width_f,
-            .screen_height = screen_height_f,
         };
     }
 
     pub fn eyeRay(self: Camera, screen_x: u32, screen_y: u32) Ray {
-        const uniform_x = @intToFloat(f32, screen_x);
-        const uniform_y = @intToFloat(f32, screen_y);
-        const shift_x = vec3.mul(self.right, uniform_x * self.pixel_width - self.half_width);
-        const shift_y = vec3.mul(self.up, uniform_y * self.pixel_height - self.half_height);
+        const screen_x_f = @intToFloat(f32, screen_x);
+        const screen_y_f = @intToFloat(f32, screen_y);
+        const shift_x = vec3.mul(self.right, screen_x_f * self.pixel_width - self.half_width);
+        const shift_y = vec3.mul(self.up, screen_y_f * self.pixel_height - self.half_height);
         return Ray{ .origin = self.position, .direction = vec3.normalize(self.eye + shift_x + shift_y) };
     }
 };
