@@ -5,6 +5,7 @@ const Sphere = @import("./sphere.zig").Sphere;
 const Ray = @import("./ray.zig").Ray;
 const Camera = @import("./camera.zig").Camera;
 const PointLight = @import("./light.zig").PointLight;
+const Color = @import("./color.zig").Color;
 
 const width = 800;
 const height = 600;
@@ -12,6 +13,7 @@ const Pixel = [4]u8;
 const ScreenBuffer = [width * height]Pixel;
 
 pub fn main() anyerror!u8 {
+    // Init SDL
     if (c.SDL_Init(c.SDL_INIT_VIDEO) != 0) {
         std.log.err("Failed to initialize SDL", .{});
         return 1;
@@ -30,14 +32,15 @@ pub fn main() anyerror!u8 {
     };
     defer c.SDL_DestroyRenderer(renderer);
 
+    // Create scene
     const sphere = Sphere{ .center = vec3.init(.{}), .radius = 1 };
     const camera = Camera.pointAt(width, height, .{
         .position = vec3.init(.{ .z = -3 }),
         .point_at = vec3.init(.{}),
     });
-    const light = PointLight{ .position = vec3.init(.{ .x = 5, .y = 10, .z = -5 }) };
-    std.debug.print("{}", .{camera});
+    const light = PointLight{ .position = vec3.init(.{ .x = 5, .y = 10, .z = -5 }), .color = Color{ .r = 0.8, .g = 0.6, .b = 0.2 } };
 
+    // Main loop
     var quit = false;
     var event: c.SDL_Event = undefined;
     while (!quit) {
@@ -55,11 +58,9 @@ pub fn main() anyerror!u8 {
                 if (intersection.hit) {
                     const intersection_point = ray.at(intersection.t);
                     const intersection_normal = sphere.normal(intersection_point);
-                    const diffuse = light.diffuse(intersection_point, intersection_normal);
-                    const r = floatToByte(diffuse);
-                    const g = r;
-                    const b = r;
-                    _ = c.SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+                    const light_color = light.diffuse(intersection_point, intersection_normal);
+                    const color = light_color.toBytes();
+                    _ = c.SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], 255);
                 } else {
                     _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                 }
@@ -75,14 +76,4 @@ pub fn main() anyerror!u8 {
     }
 
     return 0;
-}
-
-fn floatToByte(value: f32) u8 {
-    if (value < 0) {
-        return 0;
-    } else if (value > 1) {
-        return 255;
-    } else {
-        return @floatToInt(u8, value * 255);
-    }
 }
