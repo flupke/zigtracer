@@ -53,7 +53,7 @@ pub fn main() anyerror!u8 {
                 const ray = camera.eyeRay(x, height - 1 - y);
                 const intersection = sphere.intersect(ray);
                 if (intersection.hit) {
-                    const intersection_point = ray.at(intersection.at);
+                    const intersection_point = ray.at(intersection.t);
                     const intersection_normal = sphere.normal(intersection_point);
                     const diffuse = light.diffuse(intersection_point, intersection_normal);
                     const r = floatToByte(diffuse);

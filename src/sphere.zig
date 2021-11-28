@@ -19,7 +19,7 @@ pub const Sphere = struct {
         const dRoot = @sqrt(discriminant);
         const dist1 = -p - dRoot;
 
-        return Intersection{ .hit = true, .at = dist1 };
+        return Intersection{ .hit = true, .t = dist1 };
     }
 
     pub fn normal(self: Sphere, at: vec3.Vec3) vec3.Vec3 {
