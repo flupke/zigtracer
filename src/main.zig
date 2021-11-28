@@ -9,8 +9,6 @@ const Color = @import("./color.zig").Color;
 
 const width = 800;
 const height = 600;
-const Pixel = [4]u8;
-const ScreenBuffer = [width * height]Pixel;
 
 pub fn main() anyerror!u8 {
     // Init SDL
